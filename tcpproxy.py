@@ -72,7 +72,7 @@ def request_handler(buffer):
 
 def proxy_handler(client_socket, remote_host, remote_port, receive_first):
     remote_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    remote_sock.connect()
+    remote_sock.connect((remote_host, remote_port))
 
     if receive_first:
         remote_buffer = receive_from(remote_sock)
@@ -117,4 +117,25 @@ def proxy_handler(client_socket, remote_host, remote_port, receive_first):
 
 
 def main():
+    if len(sys.argv[1:]) != 5:
+        print 'Usage: ./tcpproxy.py [localhost][localport][remotehost][remoteport][receivefirst]'
+        print 'Example: ./tcpproxy.py 127.0.0.1 9000 10.12.132.1 9000 True'
+        sys.exit(0)
 
+    local_host = sys.argv[1]
+    local_port = int(sys.argv[2])
+
+    remote_host = sys.argv[3]
+    remote_port = int(sys.argv[4])
+
+    receive_first = sys.argv[5]
+
+    if 'true' in sys.argv[5].lower():
+        receive_first = True
+    else:
+        receive_first = False
+
+    server_loop(local_host, local_port, remote_host, remote_port, receive_first)
+
+if __name__ == '__main__':
+    main()
